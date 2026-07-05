@@ -1,1 +1,19 @@
 **/*.code-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local robot and camera settings
+camera*_settings.ini
+
+# Generated maintenance snapshots
+scripts/maintenance/camera_snapshots/snapshot_*.jpg
