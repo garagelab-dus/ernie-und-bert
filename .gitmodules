@@ -1,0 +1,6 @@
+[submodule "protolab-docs"]
+	path = protolab-docs
+	url = https://github.com/garagelab-dus/protolab-robo-docs.git
+[submodule "lerobot"]
+	path = lerobot
+	url = https://github.com/garagelab-dus/lerobot-fork.git
