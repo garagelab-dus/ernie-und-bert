@@ -1,0 +1,2 @@
+[2026-06-19T17:14:36.494808] DEBUG enabled for bert on /dev/tty.usbmodem5A680100531
+[2026-06-19T17:14:44.083673] motor=gripper register=Present_Load error=RuntimeError: Failed to read 'Present_Load' on id_=6 after 1 tries. [RxPacketError] Input voltage error!

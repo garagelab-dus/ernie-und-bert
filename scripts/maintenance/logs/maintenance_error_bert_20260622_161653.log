@@ -1,0 +1,39 @@
+[2026-06-22T16:16:53.197456] power_connection_error
+Traceback (most recent call last):
+  File "<stdin>", line 615, in <module>
+  File "<stdin>", line 478, in run_check_after_reassembly
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/feetech/feetech.py", line 304, in enable_torque
+    self.write("Torque_Enable", motor, TorqueMode.ENABLED.value, num_retry=num_retry)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 1093, in write
+    self._write(addr, length, id_, int_value, num_retry=num_retry, raise_on_error=True, err_msg=err_msg)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 1117, in _write
+    raise ConnectionError(f"{err_msg} {self.packet_handler.getTxRxResult(comm)}")
+ConnectionError: Failed to write 'Torque_Enable' on id_=2 with '1' after 1 tries. [TxRxResult] There is no status packet!
+
+[2026-06-22T16:16:53.499711] cleanup_error_after_power_connection_error
+Traceback (most recent call last):
+  File "<stdin>", line 632, in <module>
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/teleoperators/so_leader/so_leader.py", line 154, in disconnect
+    self.bus.disconnect()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 558, in disconnect
+    self.disable_torque(num_retry=5)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/feetech/feetech.py", line 293, in disable_torque
+    self.write("Torque_Enable", motor, TorqueMode.DISABLED.value, num_retry=num_retry)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 1093, in write
+    self._write(addr, length, id_, int_value, num_retry=num_retry, raise_on_error=True, err_msg=err_msg)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 1117, in _write
+    raise ConnectionError(f"{err_msg} {self.packet_handler.getTxRxResult(comm)}")
+ConnectionError: Failed to write 'Torque_Enable' on id_=2 with '0' after 6 tries. [TxRxResult] There is no status packet!
+

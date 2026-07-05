@@ -1,0 +1,486 @@
+#!/usr/bin/env python3
+
+"""Single-servo Feetech maintenance utility.
+
+Typical workflow:
+1. Run without ``--servo-id`` to detect exactly one connected servo and set a new ID.
+2. Re-run with ``--servo-id`` to read its state or drive it to a raw position.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+import time
+from dataclasses import dataclass
+from typing import Any
+
+from lerobot.motors import Motor, MotorCalibration, MotorNormMode
+from lerobot.motors.feetech import FeetechMotorsBus, OperatingMode, TorqueMode
+
+
+REGISTER_FIELDS = (
+	"ID",
+	"Torque_Enable",
+	"Phase",
+	"Homing_Offset",
+	"Present_Position",
+	"Present_Load",
+	"Present_Current",
+	"Present_Voltage",
+	"Present_Temperature",
+	"Torque_Limit",
+	"Max_Torque_Limit",
+	"Acceleration",
+	"Min_Position_Limit",
+	"Max_Position_Limit",
+	"Operating_Mode",
+)
+
+DEFAULT_MODEL = "sts3215"
+DEFAULT_BAUDRATE = 1_000_000
+DEFAULT_SETTLE_SECONDS = 1.0
+VIRTUAL_POS_MIN = 0
+VIRTUAL_POS_MAX = 4096
+DRIVE_VERIFY_VIRTUAL_TOLERANCE = 64
+
+
+@dataclass
+class ServoMaintenanceConfig:
+	port: str
+	baudrate: int
+	servo_id: int | None
+	set_id: int | None
+	drive_to: int | None
+	read_all: bool
+	set_current_pos: int | None
+	capture_range: bool
+	apply_range_limits: bool
+
+
+def parse_args() -> ServoMaintenanceConfig:
+	parser = argparse.ArgumentParser(description="Single-servo Feetech maintenance utility")
+	parser.add_argument("--port", required=True, help="Serial port of the servo bus")
+	parser.add_argument("--baudrate", type=int, default=DEFAULT_BAUDRATE, help="Bus baudrate")
+	parser.add_argument("--servo-id", type=int, help="Known servo ID for service mode")
+	parser.add_argument("--set-id", type=int, help="Desired new servo ID for setup mode")
+	parser.add_argument(
+		"--drive-to",
+		type=int,
+		help=(
+			"Virtual goal position in range 0..4096. "
+			"It is mapped linearly to the servo mechanical range [Min_Position_Limit, Max_Position_Limit], "
+			"so --drive-to 2048 targets the mechanical midpoint."
+		),
+	)
+	parser.add_argument("--read-all", action="store_true", help="Dump the maintenance register set")
+	parser.add_argument(
+		"--set-current-pos",
+		type=int,
+		help="Set current Present_Position to this raw value by writing Homing_Offset",
+	)
+	parser.add_argument(
+		"--capture-range",
+		action="store_true",
+		help="Record min/max raw position while moving the servo by hand",
+	)
+	parser.add_argument(
+		"--apply-range-limits",
+		action="store_true",
+		help="When used with --capture-range, write the recorded min/max to servo limits",
+	)
+	args = parser.parse_args()
+	return ServoMaintenanceConfig(
+		port=args.port,
+		baudrate=args.baudrate,
+		servo_id=args.servo_id,
+		set_id=args.set_id,
+		drive_to=args.drive_to,
+		read_all=args.read_all,
+		set_current_pos=args.set_current_pos,
+		capture_range=args.capture_range,
+		apply_range_limits=args.apply_range_limits,
+	)
+
+
+def build_bus(port: str, servo_id: int, baudrate: int) -> FeetechMotorsBus:
+	# First pass: connect without calibration to read the current calibration from the servo
+	temp_bus = FeetechMotorsBus(
+		port=port,
+		motors={"servo": Motor(servo_id, DEFAULT_MODEL, MotorNormMode.RANGE_M100_100)},
+	)
+	temp_bus.connect(handshake=False)
+	temp_bus.set_baudrate(baudrate)
+	temp_bus.set_timeout()
+
+	# Read calibration from the servo's EPROM
+	calibration_data = temp_bus.read_calibration()
+	disconnect_bus(temp_bus)
+
+	# Second pass: create the bus with calibration registered
+	bus = FeetechMotorsBus(
+		port=port,
+		motors={"servo": Motor(servo_id, DEFAULT_MODEL, MotorNormMode.RANGE_M100_100)},
+		calibration=calibration_data,
+	)
+	bus.connect(handshake=False)
+	bus.set_baudrate(baudrate)
+	bus.set_timeout()
+	return bus
+
+
+def disconnect_bus(bus: FeetechMotorsBus | None) -> None:
+	if bus is None:
+		return
+	try:
+		if bus.is_connected:
+			bus.disconnect(disable_torque=False)
+	except Exception:
+		pass
+
+
+def scan_servo_ids(port: str, baudrate: int) -> list[int]:
+	scan_bus = FeetechMotorsBus(port=port, motors={})
+	try:
+		scan_bus.connect(handshake=False)
+		scan_bus.set_baudrate(baudrate)
+		scan_bus.set_timeout()
+		ids_models = scan_bus.broadcast_ping()
+		return sorted(ids_models)
+	finally:
+		disconnect_bus(scan_bus)
+
+
+def require_single_servo(port: str, baudrate: int) -> int:
+	detected_ids = scan_servo_ids(port, baudrate)
+	if not detected_ids:
+		raise RuntimeError("No Feetech servo responded on the bus.")
+	if len(detected_ids) > 1:
+		raise RuntimeError(
+			f"Expected exactly one connected servo, found {len(detected_ids)} IDs: {detected_ids}"
+		)
+	return detected_ids[0]
+
+
+def validate_servo_id(servo_id: int) -> None:
+	if not 0 <= servo_id <= 253:
+		raise ValueError(f"Servo ID must be between 0 and 253, got {servo_id}")
+
+
+def prompt_for_new_id(current_id: int) -> int:
+	while True:
+		raw = input(f"Detected servo ID {current_id}. Enter desired new ID: ").strip()
+		if not raw.isdigit():
+			print("Please enter an integer ID.")
+			continue
+		new_id = int(raw)
+		try:
+			validate_servo_id(new_id)
+		except ValueError as exc:
+			print(exc)
+			continue
+		return new_id
+
+
+def safe_read(bus: FeetechMotorsBus, field: str) -> Any:
+	try:
+		return bus.read(field, "servo", normalize=False)
+	except Exception as exc:
+		return f"ERR:{type(exc).__name__}:{exc}"
+
+
+def dump_servo_state(bus: FeetechMotorsBus) -> None:
+	print("Servo register snapshot (raw values):")
+	for field in REGISTER_FIELDS:
+		value = safe_read(bus, field)
+		print(f"  {field:<20} {value}")
+
+
+def verify_single_servo_id(port: str, baudrate: int, expected_id: int) -> None:
+	detected_ids = scan_servo_ids(port, baudrate)
+	if detected_ids != [expected_id]:
+		raise RuntimeError(f"Expected only ID {expected_id} after update, found {detected_ids}")
+
+
+def setup_servo_id(cfg: ServoMaintenanceConfig) -> int:
+	current_id = require_single_servo(cfg.port, cfg.baudrate)
+	new_id = cfg.set_id if cfg.set_id is not None else prompt_for_new_id(current_id)
+	validate_servo_id(new_id)
+	if new_id == current_id:
+		print(f"Servo already uses ID {current_id}.")
+		return 0
+
+	detected_ids = scan_servo_ids(cfg.port, cfg.baudrate)
+	if new_id in detected_ids:
+		raise RuntimeError(f"Desired ID {new_id} is already present on the bus: {detected_ids}")
+
+	bus = None
+	try:
+		bus = build_bus(cfg.port, current_id, cfg.baudrate)
+		print(f"Setting servo ID from {current_id} to {new_id}...")
+		bus.write("ID", "servo", new_id, normalize=False)
+	finally:
+		disconnect_bus(bus)
+
+	time.sleep(0.5)
+	verify_single_servo_id(cfg.port, cfg.baudrate, new_id)
+	print(f"Servo ID updated successfully: {current_id} -> {new_id}")
+	print("Reconnect by re-running the script with --servo-id and optional service flags.")
+	return 0
+
+
+def map_virtual_to_mechanical_target(target_virtual: int, min_limit: int, max_limit: int) -> tuple[int, int]:
+	if min_limit >= max_limit:
+		raise ValueError(f"Invalid mechanical limits: [{min_limit}, {max_limit}]")
+
+	bounded_virtual = min(VIRTUAL_POS_MAX, max(VIRTUAL_POS_MIN, target_virtual))
+	span = max_limit - min_limit
+	mapped_raw = min_limit + int(round((bounded_virtual - VIRTUAL_POS_MIN) * span / (VIRTUAL_POS_MAX - VIRTUAL_POS_MIN)))
+	return mapped_raw, bounded_virtual
+
+
+def map_mechanical_to_virtual_position(position_raw: int, min_limit: int, max_limit: int) -> tuple[int, int]:
+	if min_limit >= max_limit:
+		raise ValueError(f"Invalid mechanical limits: [{min_limit}, {max_limit}]")
+
+	bounded_raw = min(max_limit, max(min_limit, position_raw))
+	span = max_limit - min_limit
+	mapped_virtual = VIRTUAL_POS_MIN + int(
+		round((bounded_raw - min_limit) * (VIRTUAL_POS_MAX - VIRTUAL_POS_MIN) / span)
+	)
+	return mapped_virtual, bounded_raw
+
+
+def decode_phase_direction_bits(phase: int) -> tuple[bool, bool]:
+	"""Return (drive_direction_reversed, feedback_direction_reversed) from Phase register."""
+	drive_reversed = bool(phase & 0x01)
+	feedback_reversed = bool(phase & 0x80)
+	return drive_reversed, feedback_reversed
+
+
+def drive_servo(bus: FeetechMotorsBus, target_virtual: int) -> None:
+	current_position = int(bus.read("Present_Position", "servo", normalize=False))
+	phase = int(bus.read("Phase", "servo", normalize=False))
+	min_limit = int(bus.read("Min_Position_Limit", "servo", normalize=False))
+	max_limit = int(bus.read("Max_Position_Limit", "servo", normalize=False))
+	target_present_raw, bounded_virtual = map_virtual_to_mechanical_target(target_virtual, min_limit, max_limit)
+
+	current_virtual, current_bounded_raw = map_mechanical_to_virtual_position(current_position, min_limit, max_limit)
+	drive_reversed, feedback_reversed = decode_phase_direction_bits(phase)
+
+	print(f"Current raw position: {current_position}")
+	if current_bounded_raw != current_position:
+		print(
+			f"Current raw position {current_position} is outside mechanical limits and is clamped to {current_bounded_raw} for virtual mapping."
+		)
+	print(f"Current virtual position: {current_virtual}")
+	print(
+		f"Phase register: {phase} "
+		f"(drive_direction_reversed={drive_reversed}, feedback_direction_reversed={feedback_reversed})"
+	)
+	print(f"Mechanical limits (raw): {min_limit}-{max_limit}")
+	if bounded_virtual != target_virtual:
+		print(
+			f"Virtual target {target_virtual} is outside [{VIRTUAL_POS_MIN}, {VIRTUAL_POS_MAX}] and was clamped to {bounded_virtual}."
+		)
+	print(
+		f"Driving servo using virtual target {bounded_virtual} -> target {target_present_raw} "
+		f"(virtual midpoint {int((VIRTUAL_POS_MIN + VIRTUAL_POS_MAX) / 2)} maps to mechanical midpoint)."
+	)
+	torque_enabled = False
+	try:
+		# Ensure position mode so Goal_Position behaves as expected.
+		bus.disable_torque(motors="servo")
+		bus.write("Operating_Mode", "servo", OperatingMode.POSITION.value, normalize=False)
+		bus.enable_torque(motors="servo")
+		torque_enabled = True
+		bus.write("Goal_Position", "servo", target_present_raw, normalize=False)
+		time.sleep(DEFAULT_SETTLE_SECONDS)
+		final_position = int(bus.read("Present_Position", "servo", normalize=False))
+		final_virtual, final_bounded_raw = map_mechanical_to_virtual_position(final_position, min_limit, max_limit)
+		print(f"Final raw position: {final_position}")
+		if final_bounded_raw != final_position:
+			print(
+				f"Final raw position {final_position} is outside mechanical limits and is clamped to {final_bounded_raw} for virtual mapping."
+			)
+		print(f"Final virtual position: {final_virtual}")
+
+		virtual_error = abs(final_virtual - bounded_virtual)
+		if virtual_error > DRIVE_VERIFY_VIRTUAL_TOLERANCE:
+			raise RuntimeError(
+				"Drive target not reached. "
+				f"Requested virtual={bounded_virtual}, measured virtual={final_virtual}, "
+				f"error={virtual_error} (tolerance={DRIVE_VERIFY_VIRTUAL_TOLERANCE}). "
+				"Possible causes: wrong operating mode, mechanical blockage, overload, or incorrect calibration limits."
+			)
+	finally:
+		if torque_enabled:
+			try:
+				bus.disable_torque(motors="servo")
+			except Exception:
+				pass
+
+
+def set_current_position_reference(bus: FeetechMotorsBus, desired_present: int) -> int:
+	"""Shift Homing_Offset so current Present_Position becomes desired_present.
+
+	Feetech relation:
+	Present_Position = Actual_Position - Homing_Offset
+	Therefore: new_offset = actual_position - desired_present
+
+	All values are raw integers (not normalized).
+
+	When this function is used, it replaces the previous offset baseline by computing
+	a fresh offset from the inferred physical position.
+	
+	CONSTRAINT: The calculated offset must fit in the signed 11-bit range (-2048 to 2047).
+	This is a hardware limitation of the Feetech servo register.
+	
+	Example: Gripper physically at encoder 2041, user specifies desired_present=0:
+	  new_offset = 0 + 2041 - 0 = 2041 (within range)
+	  Then mechanical minimum position (encoder 2041) reads as Present_Position = 0
+	  And mechanical maximum (encoder 3593) reads as Present_Position = 1552
+	"""
+	current_present = int(bus.read("Present_Position", "servo", normalize=False))
+	current_offset = int(bus.read("Homing_Offset", "servo", normalize=False))
+	actual_position = current_present + current_offset
+	new_offset = actual_position - desired_present
+	
+	# Enforce: offset must fit in signed 11-bit register
+	if not (-2048 <= new_offset <= 2047):
+		raise ValueError(
+			f"Calculated offset {new_offset} exceeds the signed 11-bit range [-2048, 2047]. "
+			f"Current position: {current_present}, desired position: {desired_present}, "
+			f"inferred actual position: {actual_position}. "
+			f"Try a desired_present value closer to the current position."
+		)
+
+	# EPROM writes require unlocked state; disabling torque also writes Lock=0 in this bus.
+	bus.disable_torque(motors="servo")
+	time.sleep(0.1)
+	bus.write("Homing_Offset", "servo", new_offset, normalize=False)
+	time.sleep(0.2)
+	# Lock the register to finalize EPROM write and commit to flash memory.
+	bus.write("Lock", "servo", 1, normalize=False)
+	time.sleep(0.2)
+	updated_present = int(bus.read("Present_Position", "servo", normalize=False))
+	read_back_offset = int(bus.read("Homing_Offset", "servo", normalize=False))
+
+	print("Updated Homing_Offset:")
+	print(f"  old_offset={current_offset}")
+	print(f"  current_present(before)={current_present}")
+	print(f"  inferred_actual_position={actual_position}")
+	print(f"  desired_present={desired_present}")
+	print(f"  new_offset={new_offset}")
+	print(f"  new_offset(read_back)={read_back_offset}")
+	print(f"  current_present(after)={updated_present}")
+	return new_offset
+
+
+def record_servo_range(bus: FeetechMotorsBus) -> tuple[int, int]:
+	bus.disable_torque(motors="servo")
+	print(
+		"Move the servo manually through the full mechanical travel.\n"
+		"Recording min/max raw position. Press ENTER to stop..."
+	)
+	range_mins, range_maxes = bus.record_ranges_of_motion(motors="servo", display_values=True)
+	min_raw = int(range_mins["servo"])
+	max_raw = int(range_maxes["servo"])
+	print(f"Recorded range: min={min_raw}, max={max_raw}")
+	print(
+		f"\n*** RANGE CALIBRATION COMPLETE ***\n"
+		f"Mechanical range recorded in your virtual coordinate system:\n"
+		f"  Minimum position: {min_raw}\n"
+		f"  Maximum position: {max_raw}\n"
+	)
+	return min_raw, max_raw
+
+
+def apply_servo_range_limits(bus: FeetechMotorsBus, min_raw: int, max_raw: int) -> None:
+	if min_raw >= max_raw:
+		raise ValueError(f"Invalid range: min ({min_raw}) must be < max ({max_raw})")
+
+	bus.disable_torque(motors="servo")
+	time.sleep(0.1)
+	bus.write("Min_Position_Limit", "servo", min_raw, normalize=False)
+	time.sleep(0.1)
+	bus.write("Max_Position_Limit", "servo", max_raw, normalize=False)
+	time.sleep(0.2)
+	# Lock the register to finalize EPROM write and commit to flash memory.
+	bus.write("Lock", "servo", 1, normalize=False)
+	time.sleep(0.2)
+	read_min = int(bus.read("Min_Position_Limit", "servo", normalize=False))
+	read_max = int(bus.read("Max_Position_Limit", "servo", normalize=False))
+	print(f"Applied servo limits: Min_Position_Limit={read_min}, Max_Position_Limit={read_max}")
+
+
+def prompt_service_action(bus: FeetechMotorsBus) -> None:
+	print("Choose action:")
+	print("  1. Read maintenance register set")
+	print("  2. Drive to virtual position")
+	choice = input("Select [1/2]: ").strip()
+	if choice == "1":
+		dump_servo_state(bus)
+		return
+	if choice == "2":
+		virtual_target = input("Enter virtual target position (0..4096, 2048=mid): ").strip()
+		if not virtual_target.lstrip("-").isdigit():
+			raise ValueError("Target position must be an integer")
+		drive_servo(bus, int(virtual_target))
+		return
+	raise ValueError(f"Unknown action selection: {choice}")
+
+
+def service_servo(cfg: ServoMaintenanceConfig) -> int:
+	if cfg.servo_id is None:
+		raise RuntimeError("Service mode requires --servo-id.")
+	if cfg.apply_range_limits and not cfg.capture_range:
+		raise RuntimeError("--apply-range-limits requires --capture-range.")
+
+	bus = None
+	try:
+		bus = build_bus(cfg.port, cfg.servo_id, cfg.baudrate)
+		present_id = int(bus.read("ID", "servo", normalize=False))
+		print(f"Connected to servo ID: {present_id}")
+
+		if cfg.read_all:
+			dump_servo_state(bus)
+
+		if cfg.set_current_pos is not None:
+			set_current_position_reference(bus, cfg.set_current_pos)
+
+		recorded_range: tuple[int, int] | None = None
+		if cfg.capture_range:
+			recorded_range = record_servo_range(bus)
+			if cfg.apply_range_limits:
+				apply_servo_range_limits(bus, recorded_range[0], recorded_range[1])
+
+		if cfg.drive_to is not None:
+			drive_servo(bus, cfg.drive_to)
+		elif not any(
+			[
+				cfg.read_all,
+				cfg.set_current_pos is not None,
+				cfg.capture_range,
+			]
+		):
+			prompt_service_action(bus)
+
+		return 0
+	finally:
+		disconnect_bus(bus)
+
+
+def main() -> int:
+	cfg = parse_args()
+	try:
+		if cfg.servo_id is None:
+			return setup_servo_id(cfg)
+		return service_servo(cfg)
+	except Exception as exc:
+		print(f"Error: {exc}", file=sys.stderr)
+		return 1
+
+
+if __name__ == "__main__":
+	raise SystemExit(main())

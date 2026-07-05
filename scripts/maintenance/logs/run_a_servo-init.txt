@@ -1,0 +1,21 @@
+(robot) lerobot@GarageLab-MacBook-Air-No1-3 maintenance % ./run_a_servo-init.py --port $bert_port --servo-id 6 \              
+  --set-current-pos 0 \   
+  --capture-range --apply-range-limits
+Connected to servo ID: 6
+Error: Magnitude 3417 exceeds 2047 (max for sign_bit_index=11)
+
+## Assumption
+
+We need to evaluate the direction of rotation before setting target position.
+
+If i set a mechanical minimum to a virtual position of 2048, 
+and move gripper from minimum to maximum
+and get min_pos = 2048 and max_pos = 3600,
+then
+- virtual target values below 2048 are impossible
+- virtual targets higher then max_pos are impossible
+- turning motor from 3600 over 4096 to 2050 is impossible.
+
+Reason:
+While turning from a high value to a low value over the maximum is possible in a circle, it's not possible in mechanical linear movements.
+

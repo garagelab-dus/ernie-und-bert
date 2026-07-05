@@ -1,0 +1,59 @@
+[2026-06-20T14:50:46.885519] power_connection_error
+Traceback (most recent call last):
+  File "<stdin>", line 440, in <module>
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 39, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/teleoperators/so_leader/so_leader.py", line 70, in connect
+    self.bus.connect()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 39, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 525, in connect
+    self._connect(handshake)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 534, in _connect
+    self._handshake()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/feetech/feetech.py", line 156, in _handshake
+    self._assert_motors_exist()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 501, in _assert_motors_exist
+    raise RuntimeError("\n".join(error_lines))
+RuntimeError: FeetechMotorsBus motor check failed on port '/dev/tty.usbmodem5A680100531':
+
+Missing motor IDs:
+  - 1 (expected model: 777)
+  - 2 (expected model: 777)
+  - 3 (expected model: 777)
+  - 4 (expected model: 777)
+  - 5 (expected model: 777)
+  - 6 (expected model: 777)
+
+Full expected motor list (id: model_number):
+{1: 777, 2: 777, 3: 777, 4: 777, 5: 777, 6: 777}
+
+Full found motor list (id: model_number):
+{}
+
+[2026-06-20T14:50:47.190024] cleanup_error_after_power_connection_error
+Traceback (most recent call last):
+  File "<stdin>", line 501, in <module>
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/teleoperators/so_leader/so_leader.py", line 154, in disconnect
+    self.bus.disconnect()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 558, in disconnect
+    self.disable_torque(num_retry=5)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/feetech/feetech.py", line 293, in disable_torque
+    self.write("Torque_Enable", motor, TorqueMode.DISABLED.value, num_retry=num_retry)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 1093, in write
+    self._write(addr, length, id_, int_value, num_retry=num_retry, raise_on_error=True, err_msg=err_msg)
+  File "/Users/lerobot/repos/lerobot/src/lerobot/motors/motors_bus.py", line 1117, in _write
+    raise ConnectionError(f"{err_msg} {self.packet_handler.getTxRxResult(comm)}")
+ConnectionError: Failed to write 'Torque_Enable' on id_=1 with '0' after 6 tries. [TxRxResult] There is no status packet!
+

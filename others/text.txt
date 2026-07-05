@@ -1,0 +1,842 @@
+usage: lerobot-teleoperate [-h] [--config_path str] [--teleop str]
+                           [--teleop.type {openarm_leader,bi_openarm_leader,so100_leader,so101_leader,bi_so_leader,gamepad,homunculus_glove,homunculus_arm,keyboard,keyboard_ee,keyboard_rover,koch_leader,omx_leader,openarm_mini,reachy2_teleoperator,unitree_g1}]
+                           [--teleop.can_interface str]
+                           [--teleop.use_can_fd bool]
+                           [--teleop.can_bitrate int]
+                           [--teleop.can_data_bitrate int]
+                           [--teleop.motor_config Dict]
+                           [--teleop.manual_control bool]
+                           [--teleop.position_kp List]
+                           [--teleop.position_kd List]
+                           [--teleop.left_arm_config.can_interface str]
+                           [--teleop.left_arm_config.use_can_fd bool]
+                           [--teleop.left_arm_config.can_bitrate int]
+                           [--teleop.left_arm_config.can_data_bitrate int]
+                           [--teleop.left_arm_config.motor_config Dict]
+                           [--teleop.left_arm_config.manual_control bool]
+                           [--teleop.left_arm_config.position_kp List]
+                           [--teleop.left_arm_config.position_kd List]
+                           [--teleop.right_arm_config.can_interface str]
+                           [--teleop.right_arm_config.use_can_fd bool]
+                           [--teleop.right_arm_config.can_bitrate int]
+                           [--teleop.right_arm_config.can_data_bitrate int]
+                           [--teleop.right_arm_config.motor_config Dict]
+                           [--teleop.right_arm_config.manual_control bool]
+                           [--teleop.right_arm_config.position_kp List]
+                           [--teleop.right_arm_config.position_kd List]
+                           [--teleop.left_arm_config.use_degrees bool]
+                           [--teleop.right_arm_config.use_degrees bool]
+                           [--teleop.side str] [--teleop.baud_rate int]
+                           [--teleop.use_gripper bool]
+                           [--teleop.linear_speed float]
+                           [--teleop.angular_speed float]
+                           [--teleop.speed_increment float]
+                           [--teleop.turn_assist_ratio float]
+                           [--teleop.angular_speed_ratio float]
+                           [--teleop.min_linear_speed float]
+                           [--teleop.min_angular_speed float]
+                           [--teleop.port str]
+                           [--teleop.gripper_open_pos float]
+                           [--teleop.port_right str] [--teleop.port_left str]
+                           [--teleop.use_degrees bool]
+                           [--teleop.ip_address [str]]
+                           [--teleop.use_present_position bool]
+                           [--teleop.with_mobile_base bool]
+                           [--teleop.with_l_arm bool]
+                           [--teleop.with_r_arm bool]
+                           [--teleop.with_neck bool]
+                           [--teleop.with_antennas bool] [--teleop.id [str]]
+                           [--teleop.calibration_dir [Path]]
+                           [--teleop.left_arm_config.port str]
+                           [--teleop.left_arm_config.baud_rate int]
+                           [--teleop.right_arm_config.port str]
+                           [--teleop.right_arm_config.baud_rate int]
+                           [--teleop.frozen_joints str] [--robot str]
+                           [--robot.type {openarm_follower,bi_openarm_follower,so100_follower,so101_follower,bi_so_follower,earthrover_mini_plus,hope_jr_hand,hope_jr_arm,koch_follower,omx_follower,reachy2,unitree_g1}]
+                           [--robot.can_interface str]
+                           [--robot.use_can_fd bool] [--robot.can_bitrate int]
+                           [--robot.can_data_bitrate int]
+                           [--robot.motor_config Dict]
+                           [--robot.position_kp List]
+                           [--robot.position_kd List]
+                           [--robot.joint_limits Dict]
+                           [--robot.left_arm_config.side [str]]
+                           [--robot.left_arm_config.can_interface str]
+                           [--robot.left_arm_config.use_can_fd bool]
+                           [--robot.left_arm_config.can_bitrate int]
+                           [--robot.left_arm_config.can_data_bitrate int]
+                           [--robot.left_arm_config.motor_config Dict]
+                           [--robot.left_arm_config.position_kp List]
+                           [--robot.left_arm_config.position_kd List]
+                           [--robot.left_arm_config.joint_limits Dict]
+                           [--robot.right_arm_config.side [str]]
+                           [--robot.right_arm_config.can_interface str]
+                           [--robot.right_arm_config.use_can_fd bool]
+                           [--robot.right_arm_config.can_bitrate int]
+                           [--robot.right_arm_config.can_data_bitrate int]
+                           [--robot.right_arm_config.motor_config Dict]
+                           [--robot.right_arm_config.position_kp List]
+                           [--robot.right_arm_config.position_kd List]
+                           [--robot.right_arm_config.joint_limits Dict]
+                           [--left_arm_config str]
+                           [--robot.left_arm_config.port str]
+                           [--robot.left_arm_config.disable_torque_on_disconnect bool]
+                           [--robot.left_arm_config.max_relative_target [float|Dict]]
+                           [--robot.left_arm_config.cameras Dict]
+                           [--robot.left_arm_config.use_degrees bool]
+                           [--right_arm_config str]
+                           [--robot.right_arm_config.port str]
+                           [--robot.right_arm_config.disable_torque_on_disconnect bool]
+                           [--robot.right_arm_config.max_relative_target [float|Dict]]
+                           [--robot.right_arm_config.cameras Dict]
+                           [--robot.right_arm_config.use_degrees bool]
+                           [--robot.sdk_url str] [--robot.side str]
+                           [--robot.use_degrees bool]
+                           [--robot.max_relative_target [float]]
+                           [--robot.ip_address [str]] [--robot.port int]
+                           [--robot.disable_torque_on_disconnect bool]
+                           [--robot.use_external_commands bool]
+                           [--robot.with_mobile_base bool]
+                           [--robot.with_l_arm bool] [--robot.with_r_arm bool]
+                           [--robot.with_neck bool]
+                           [--robot.with_antennas bool]
+                           [--robot.with_left_teleop_camera bool]
+                           [--robot.with_right_teleop_camera bool]
+                           [--robot.with_torso_camera bool]
+                           [--robot.camera_width int]
+                           [--robot.camera_height int] [--robot.id [str]]
+                           [--robot.calibration_dir [Path]] [--robot.kp List]
+                           [--robot.kd List] [--robot.default_positions List]
+                           [--robot.control_dt float]
+                           [--robot.is_simulation bool] [--robot.robot_ip str]
+                           [--robot.cameras Dict]
+                           [--robot.gravity_compensation bool]
+                           [--robot.controller [str]] [--fps int]
+                           [--teleop_time_s [float]] [--display_data bool]
+                           [--display_ip [str]] [--display_port [int]]
+                           [--display_compressed_images bool]
+
+options:
+  -h, --help            show this help message and exit
+  --config_path str     Path for a config file to parse with draccus (default:
+                        None)
+  --teleop str          Config file for teleop (default: None)
+  --left_arm_config str
+                        Config file for left_arm_config (default: None)
+  --right_arm_config str
+                        Config file for right_arm_config (default: None)
+  --left_arm_config str
+                        Config file for left_arm_config (default: None)
+  --right_arm_config str
+                        Config file for right_arm_config (default: None)
+  --left_arm_config str
+                        Config file for left_arm_config (default: None)
+  --right_arm_config str
+                        Config file for right_arm_config (default: None)
+  --robot str           Config file for robot (default: None)
+  --left_arm_config str
+                        Config file for left_arm_config (default: None)
+  --right_arm_config str
+                        Config file for right_arm_config (default: None)
+  --left_arm_config str
+                        Config file for left_arm_config (default: None)
+  --right_arm_config str
+                        Config file for right_arm_config (default: None)
+
+TeleoperateConfig:
+
+  --fps int             Limit the maximum frames per second. (default: 60)
+  --teleop_time_s [float]
+  --display_data bool   Display all cameras on screen (default: False)
+  --display_ip [str]    Display data on a remote Rerun server (default: None)
+  --display_port [int]  Port of the remote Rerun server (default: None)
+  --display_compressed_images bool
+                        Whether to display compressed images in Rerun
+                        (default: False)
+
+TeleoperatorConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.type {openarm_leader,bi_openarm_leader,so100_leader,so101_leader,bi_so_leader,gamepad,homunculus_glove,homunculus_arm,keyboard,keyboard_ee,keyboard_rover,koch_leader,omx_leader,openarm_mini,reachy2_teleoperator,unitree_g1}
+                        Which type of TeleoperatorConfig ['teleop'] to use
+                        (default: None)
+
+OpenArmLeaderConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.port str
+  --teleop.can_interface str
+  --teleop.use_can_fd bool
+  --teleop.can_bitrate int
+  --teleop.can_data_bitrate int
+  --teleop.motor_config Dict
+  --teleop.manual_control bool
+  --teleop.position_kp List
+  --teleop.position_kd List
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+BiOpenArmLeaderConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+OpenArmLeaderConfigBase ['teleop.left_arm_config']:
+  Base configuration for the OpenArms leader/teleoperator with Damiao motors.
+
+  --teleop.left_arm_config.port str
+                        CAN interfaces - one per arm Arm CAN interface (e.g.,
+                        "can3") Linux: "can0", "can1", etc. (default: None)
+  --teleop.left_arm_config.can_interface str
+                        CAN interface type: "socketcan" (Linux), "slcan"
+                        (serial), or "auto" (auto-detect) (default: socketcan)
+  --teleop.left_arm_config.use_can_fd bool
+                        CAN FD settings (OpenArms uses CAN FD by default)
+                        (default: True)
+  --teleop.left_arm_config.can_bitrate int
+                        Nominal bitrate (1 Mbps) (default: 1000000)
+  --teleop.left_arm_config.can_data_bitrate int
+                        Data bitrate for CAN FD (5 Mbps) (default: 5000000)
+  --teleop.left_arm_config.motor_config Dict
+                        Motor configuration for OpenArms (7 DOF per arm) Maps
+                        motor names to (send_can_id, recv_can_id, motor_type)
+                        Based on:
+                        https://docs.openarm.dev/software/setup/configure-test
+                        OpenArms uses 4 types of motors: - DM8009
+                        (DM-J8009P-2EC) for shoulders (high torque) - DM4340P
+                        and DM4340 for shoulder rotation and elbow - DM4310
+                        (DM-J4310-2EC V1.1) for wrist and gripper (default:
+                        {'joint_1': (1, 17, 'dm8009'), 'joint_2': (2, 18,
+                        'dm8009'), 'joint_3': (3, 19, 'dm4340'), 'joint_4':
+                        (4, 20, 'dm4340'), 'joint_5': (5, 21, 'dm4310'),
+                        'joint_6': (6, 22, 'dm4310'), 'joint_7': (7, 23,
+                        'dm4310'), 'gripper': (8, 24, 'dm4310')})
+  --teleop.left_arm_config.manual_control bool
+                        Torque mode settings for manual control When enabled,
+                        motors have torque disabled for manual movement
+                        (default: True)
+  --teleop.left_arm_config.position_kp List
+                        TODO(Steven, Pepijn): Not used ... ? MIT control
+                        parameters (used when manual_control=False for torque
+                        control) List of 8 values: [joint_1, joint_2, joint_3,
+                        joint_4, joint_5, joint_6, joint_7, gripper] (default:
+                        [240.0, 240.0, 240.0, 240.0, 24.0, 31.0, 25.0, 16.0])
+  --teleop.left_arm_config.position_kd List
+
+OpenArmLeaderConfigBase ['teleop.right_arm_config']:
+  Base configuration for the OpenArms leader/teleoperator with Damiao motors.
+
+  --teleop.right_arm_config.port str
+                        CAN interfaces - one per arm Arm CAN interface (e.g.,
+                        "can3") Linux: "can0", "can1", etc. (default: None)
+  --teleop.right_arm_config.can_interface str
+                        CAN interface type: "socketcan" (Linux), "slcan"
+                        (serial), or "auto" (auto-detect) (default: socketcan)
+  --teleop.right_arm_config.use_can_fd bool
+                        CAN FD settings (OpenArms uses CAN FD by default)
+                        (default: True)
+  --teleop.right_arm_config.can_bitrate int
+                        Nominal bitrate (1 Mbps) (default: 1000000)
+  --teleop.right_arm_config.can_data_bitrate int
+                        Data bitrate for CAN FD (5 Mbps) (default: 5000000)
+  --teleop.right_arm_config.motor_config Dict
+                        Motor configuration for OpenArms (7 DOF per arm) Maps
+                        motor names to (send_can_id, recv_can_id, motor_type)
+                        Based on:
+                        https://docs.openarm.dev/software/setup/configure-test
+                        OpenArms uses 4 types of motors: - DM8009
+                        (DM-J8009P-2EC) for shoulders (high torque) - DM4340P
+                        and DM4340 for shoulder rotation and elbow - DM4310
+                        (DM-J4310-2EC V1.1) for wrist and gripper (default:
+                        {'joint_1': (1, 17, 'dm8009'), 'joint_2': (2, 18,
+                        'dm8009'), 'joint_3': (3, 19, 'dm4340'), 'joint_4':
+                        (4, 20, 'dm4340'), 'joint_5': (5, 21, 'dm4310'),
+                        'joint_6': (6, 22, 'dm4310'), 'joint_7': (7, 23,
+                        'dm4310'), 'gripper': (8, 24, 'dm4310')})
+  --teleop.right_arm_config.manual_control bool
+                        Torque mode settings for manual control When enabled,
+                        motors have torque disabled for manual movement
+                        (default: True)
+  --teleop.right_arm_config.position_kp List
+                        TODO(Steven, Pepijn): Not used ... ? MIT control
+                        parameters (used when manual_control=False for torque
+                        control) List of 8 values: [joint_1, joint_2, joint_3,
+                        joint_4, joint_5, joint_6, joint_7, gripper] (default:
+                        [240.0, 240.0, 240.0, 240.0, 24.0, 31.0, 25.0, 16.0])
+  --teleop.right_arm_config.position_kd List
+
+SOLeaderTeleopConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.port str
+  --teleop.use_degrees bool
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+SOLeaderTeleopConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.port str
+  --teleop.use_degrees bool
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+BiSOLeaderConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+SOLeaderConfig ['teleop.left_arm_config']:
+  Base configuration class for SO Leader teleoperators.
+
+  --teleop.left_arm_config.port str
+                        Port to connect to the arm (default: None)
+  --teleop.left_arm_config.use_degrees bool
+                        Whether to use degrees for angles (default: True)
+
+SOLeaderConfig ['teleop.right_arm_config']:
+  Base configuration class for SO Leader teleoperators.
+
+  --teleop.right_arm_config.port str
+                        Port to connect to the arm (default: None)
+  --teleop.right_arm_config.use_degrees bool
+                        Whether to use degrees for angles (default: True)
+
+GamepadTeleopConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.use_gripper bool
+
+HomunculusGloveConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.port str     Port to connect to the glove (default: None)
+  --teleop.side str     "left" / "right" (default: None)
+  --teleop.baud_rate int
+
+HomunculusArmConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.port str     Port to connect to the arm (default: None)
+  --teleop.baud_rate int
+
+KeyboardTeleopConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+KeyboardEndEffectorTeleopConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.use_gripper bool
+
+KeyboardRoverTeleopConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.linear_speed float
+  --teleop.angular_speed float
+  --teleop.speed_increment float
+  --teleop.turn_assist_ratio float
+  --teleop.angular_speed_ratio float
+  --teleop.min_linear_speed float
+  --teleop.min_angular_speed float
+
+KochLeaderConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.port str     Port to connect to the arm (default: None)
+  --teleop.gripper_open_pos float
+                        Sets the arm in torque mode with the gripper motor set
+                        to this value. This makes it possible to squeeze the
+                        gripper and have it spring back to an open position on
+                        its own. (default: 50.0)
+
+OmxLeaderConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.port str     Port to connect to the arm (default: None)
+  --teleop.gripper_open_pos float
+                        Sets the arm in torque mode with the gripper motor set
+                        to this value. This makes it possible to squeeze the
+                        gripper and have it spring back to an open position on
+                        its own. (default: 60.0)
+
+OpenArmMiniConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.port_right str
+  --teleop.port_left str
+  --teleop.use_degrees bool
+
+Reachy2TeleoperatorConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.ip_address [str]
+                        IP address of the Reachy 2 robot used as teleoperator
+                        (default: localhost)
+  --teleop.use_present_position bool
+                        Whether to use the present position of the joints as
+                        actions if False, the goal position of the joints will
+                        be used (default: False)
+  --teleop.with_mobile_base bool
+                        Which parts of the robot to use (default: True)
+  --teleop.with_l_arm bool
+  --teleop.with_r_arm bool
+  --teleop.with_neck bool
+  --teleop.with_antennas bool
+
+UnitreeG1TeleoperatorConfig ['teleop']:
+  TODO: pepijn, steven: if more robots require multiple teleoperators (like lekiwi) its good to make this possibele in teleop.py and record.py with List[Teleoperator]
+
+  --teleop.id [str]     Allows to distinguish between different teleoperators
+                        of the same type (default: None)
+  --teleop.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --teleop.frozen_joints str
+                        Frozen joints (comma-separated joint names that won't
+                        be moved by IK) (default: )
+
+ExoskeletonArmPortConfig ['teleop.left_arm_config']:
+  Serial port configuration for individual exoskeleton arm.
+
+  --teleop.left_arm_config.port str
+  --teleop.left_arm_config.baud_rate int
+
+ExoskeletonArmPortConfig ['teleop.right_arm_config']:
+  Serial port configuration for individual exoskeleton arm.
+
+  --teleop.right_arm_config.port str
+  --teleop.right_arm_config.baud_rate int
+
+RobotConfig ['robot']:
+
+  --robot.type {openarm_follower,bi_openarm_follower,so100_follower,so101_follower,bi_so_follower,earthrover_mini_plus,hope_jr_hand,hope_jr_arm,koch_follower,omx_follower,reachy2,unitree_g1}
+                        Which type of RobotConfig ['robot'] to use (default:
+                        None)
+
+OpenArmFollowerConfig ['robot']:
+
+  --robot.port str
+  --robot.side [str]
+  --robot.can_interface str
+  --robot.use_can_fd bool
+  --robot.can_bitrate int
+  --robot.can_data_bitrate int
+  --robot.disable_torque_on_disconnect bool
+  --robot.max_relative_target [float|Dict]
+  --robot.cameras Dict  
+  --robot.motor_config Dict
+  --robot.position_kp List
+  --robot.position_kd List
+  --robot.joint_limits Dict
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+BiOpenArmFollowerConfig ['robot']:
+  Configuration class for Bi OpenArm Follower robots.
+
+  --robot.id [str]      
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.cameras Dict  Top-level cameras shared across both arms. (default:
+                        {})
+
+OpenArmFollowerConfigBase ['robot.left_arm_config']:
+  Base configuration for the OpenArms follower robot with Damiao motors.
+
+  --robot.left_arm_config.port str
+                        CAN interfaces - one per arm arm CAN interface (e.g.,
+                        "can1") Linux: "can0", "can1", etc. (default: None)
+  --robot.left_arm_config.side [str]
+                        side of the arm: "left" or "right". If "None" default
+                        values will be used (default: None)
+  --robot.left_arm_config.can_interface str
+                        CAN interface type: "socketcan" (Linux), "slcan"
+                        (serial), or "auto" (auto-detect) (default: socketcan)
+  --robot.left_arm_config.use_can_fd bool
+                        CAN FD settings (OpenArms uses CAN FD by default)
+                        (default: True)
+  --robot.left_arm_config.can_bitrate int
+                        Nominal bitrate (1 Mbps) (default: 1000000)
+  --robot.left_arm_config.can_data_bitrate int
+                        Data bitrate for CAN FD (5 Mbps) (default: 5000000)
+  --robot.left_arm_config.disable_torque_on_disconnect bool
+                        Whether to disable torque when disconnecting (default:
+                        True)
+  --robot.left_arm_config.max_relative_target [float|Dict]
+                        Safety limit for relative target positions Set to a
+                        positive scalar for all motors, or a dict mapping
+                        motor names to limits (default: None)
+  --robot.left_arm_config.cameras Dict
+                        Camera configurations (default: {})
+  --robot.left_arm_config.motor_config Dict
+                        Motor configuration for OpenArms (7 DOF per arm) Maps
+                        motor names to (send_can_id, recv_can_id, motor_type)
+                        Based on:
+                        https://docs.openarm.dev/software/setup/configure-test
+                        OpenArms uses 4 types of motors: - DM8009
+                        (DM-J8009P-2EC) for shoulders (high torque) - DM4340P
+                        and DM4340 for shoulder rotation and elbow - DM4310
+                        (DM-J4310-2EC V1.1) for wrist and gripper (default:
+                        {'joint_1': (1, 17, 'dm8009'), 'joint_2': (2, 18,
+                        'dm8009'), 'joint_3': (3, 19, 'dm4340'), 'joint_4':
+                        (4, 20, 'dm4340'), 'joint_5': (5, 21, 'dm4310'),
+                        'joint_6': (6, 22, 'dm4310'), 'joint_7': (7, 23,
+                        'dm4310'), 'gripper': (8, 24, 'dm4310')})
+  --robot.left_arm_config.position_kp List
+                        MIT control parameters for position control (used in
+                        send_action) List of 8 values: [joint_1, joint_2,
+                        joint_3, joint_4, joint_5, joint_6, joint_7, gripper]
+                        (default: [240.0, 240.0, 240.0, 240.0, 24.0, 31.0,
+                        25.0, 25.0])
+  --robot.left_arm_config.position_kd List
+  --robot.left_arm_config.joint_limits Dict
+                        Values for joint limits. Can be overridden via CLI
+                        (for custom values) or by setting config.side to
+                        either 'left' or 'right'. If config.side is left set
+                        to None and no CLI values are passed, the default
+                        joint limit values are small for safety. (default:
+                        {'joint_1': (-5.0, 5.0), 'joint_2': (-5.0, 5.0),
+                        'joint_3': (-5.0, 5.0), 'joint_4': (0.0, 5.0),
+                        'joint_5': (-5.0, 5.0), 'joint_6': (-5.0, 5.0),
+                        'joint_7': (-5.0, 5.0), 'gripper': (-5.0, 0.0)})
+
+OpenArmFollowerConfigBase ['robot.right_arm_config']:
+  Base configuration for the OpenArms follower robot with Damiao motors.
+
+  --robot.right_arm_config.port str
+                        CAN interfaces - one per arm arm CAN interface (e.g.,
+                        "can1") Linux: "can0", "can1", etc. (default: None)
+  --robot.right_arm_config.side [str]
+                        side of the arm: "left" or "right". If "None" default
+                        values will be used (default: None)
+  --robot.right_arm_config.can_interface str
+                        CAN interface type: "socketcan" (Linux), "slcan"
+                        (serial), or "auto" (auto-detect) (default: socketcan)
+  --robot.right_arm_config.use_can_fd bool
+                        CAN FD settings (OpenArms uses CAN FD by default)
+                        (default: True)
+  --robot.right_arm_config.can_bitrate int
+                        Nominal bitrate (1 Mbps) (default: 1000000)
+  --robot.right_arm_config.can_data_bitrate int
+                        Data bitrate for CAN FD (5 Mbps) (default: 5000000)
+  --robot.right_arm_config.disable_torque_on_disconnect bool
+                        Whether to disable torque when disconnecting (default:
+                        True)
+  --robot.right_arm_config.max_relative_target [float|Dict]
+                        Safety limit for relative target positions Set to a
+                        positive scalar for all motors, or a dict mapping
+                        motor names to limits (default: None)
+  --robot.right_arm_config.cameras Dict
+                        Camera configurations (default: {})
+  --robot.right_arm_config.motor_config Dict
+                        Motor configuration for OpenArms (7 DOF per arm) Maps
+                        motor names to (send_can_id, recv_can_id, motor_type)
+                        Based on:
+                        https://docs.openarm.dev/software/setup/configure-test
+                        OpenArms uses 4 types of motors: - DM8009
+                        (DM-J8009P-2EC) for shoulders (high torque) - DM4340P
+                        and DM4340 for shoulder rotation and elbow - DM4310
+                        (DM-J4310-2EC V1.1) for wrist and gripper (default:
+                        {'joint_1': (1, 17, 'dm8009'), 'joint_2': (2, 18,
+                        'dm8009'), 'joint_3': (3, 19, 'dm4340'), 'joint_4':
+                        (4, 20, 'dm4340'), 'joint_5': (5, 21, 'dm4310'),
+                        'joint_6': (6, 22, 'dm4310'), 'joint_7': (7, 23,
+                        'dm4310'), 'gripper': (8, 24, 'dm4310')})
+  --robot.right_arm_config.position_kp List
+                        MIT control parameters for position control (used in
+                        send_action) List of 8 values: [joint_1, joint_2,
+                        joint_3, joint_4, joint_5, joint_6, joint_7, gripper]
+                        (default: [240.0, 240.0, 240.0, 240.0, 24.0, 31.0,
+                        25.0, 25.0])
+  --robot.right_arm_config.position_kd List
+  --robot.right_arm_config.joint_limits Dict
+                        Values for joint limits. Can be overridden via CLI
+                        (for custom values) or by setting config.side to
+                        either 'left' or 'right'. If config.side is left set
+                        to None and no CLI values are passed, the default
+                        joint limit values are small for safety. (default:
+                        {'joint_1': (-5.0, 5.0), 'joint_2': (-5.0, 5.0),
+                        'joint_3': (-5.0, 5.0), 'joint_4': (0.0, 5.0),
+                        'joint_5': (-5.0, 5.0), 'joint_6': (-5.0, 5.0),
+                        'joint_7': (-5.0, 5.0), 'gripper': (-5.0, 0.0)})
+
+SOFollowerRobotConfig ['robot']:
+
+  --robot.port str
+  --robot.disable_torque_on_disconnect bool
+  --robot.max_relative_target [float|Dict]
+  --robot.cameras Dict  
+  --robot.use_degrees bool
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+SOFollowerRobotConfig ['robot']:
+
+  --robot.port str
+  --robot.disable_torque_on_disconnect bool
+  --robot.max_relative_target [float|Dict]
+  --robot.cameras Dict  
+  --robot.use_degrees bool
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+BiSOFollowerConfig ['robot']:
+  Configuration class for Bi SO Follower robots.
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+
+SOFollowerConfig ['robot.left_arm_config']:
+  Base configuration class for SO Follower robots.
+
+  --robot.left_arm_config.port str
+                        Port to connect to the arm (default: None)
+  --robot.left_arm_config.disable_torque_on_disconnect bool
+  --robot.left_arm_config.max_relative_target [float|Dict]
+                        `max_relative_target` limits the magnitude of the
+                        relative positional target vector for safety purposes.
+                        Set this to a positive scalar to have the same value
+                        for all motors, or a dictionary that maps motor names
+                        to the max_relative_target value for that motor.
+                        (default: None)
+  --robot.left_arm_config.cameras Dict
+                        cameras (default: {})
+  --robot.left_arm_config.use_degrees bool
+                        Set to `True` for backward compatibility with previous
+                        policies/dataset (default: True)
+
+SOFollowerConfig ['robot.right_arm_config']:
+  Base configuration class for SO Follower robots.
+
+  --robot.right_arm_config.port str
+                        Port to connect to the arm (default: None)
+  --robot.right_arm_config.disable_torque_on_disconnect bool
+  --robot.right_arm_config.max_relative_target [float|Dict]
+                        `max_relative_target` limits the magnitude of the
+                        relative positional target vector for safety purposes.
+                        Set this to a positive scalar to have the same value
+                        for all motors, or a dictionary that maps motor names
+                        to the max_relative_target value for that motor.
+                        (default: None)
+  --robot.right_arm_config.cameras Dict
+                        cameras (default: {})
+  --robot.right_arm_config.use_degrees bool
+                        Set to `True` for backward compatibility with previous
+                        policies/dataset (default: True)
+
+EarthRoverMiniPlusConfig ['robot']:
+  Configuration for EarthRover Mini Plus robot using Frodobots SDK.
+  
+      This robot uses cloud-based control via the Frodobots SDK HTTP API.
+      Camera frames are accessed directly through SDK HTTP endpoints.
+  
+      Attributes:
+          sdk_url: URL of the Frodobots SDK server (default: http://localhost:8000)
+      
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.sdk_url str   
+
+HopeJrHandConfig ['robot']:
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.port str      Port to connect to the hand (default: None)
+  --robot.side str      "left" / "right" (default: None)
+  --robot.disable_torque_on_disconnect bool
+  --robot.cameras Dict  
+
+HopeJrArmConfig ['robot']:
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.port str      Port to connect to the hand (default: None)
+  --robot.disable_torque_on_disconnect bool
+  --robot.max_relative_target [float|Dict]
+                        `max_relative_target` limits the magnitude of the
+                        relative positional target vector for safety purposes.
+                        Set this to a positive scalar to have the same value
+                        for all motors, or a dictionary that maps motor names
+                        to the max_relative_target value for that motor.
+                        (default: None)
+  --robot.cameras Dict  
+
+KochFollowerConfig ['robot']:
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.port str      Port to connect to the arm (default: None)
+  --robot.disable_torque_on_disconnect bool
+  --robot.max_relative_target [float|Dict]
+                        `max_relative_target` limits the magnitude of the
+                        relative positional target vector for safety purposes.
+                        Set this to a positive scalar to have the same value
+                        for all motors, or a dictionary that maps motor names
+                        to the max_relative_target value for that motor.
+                        (default: None)
+  --robot.cameras Dict  cameras (default: {})
+  --robot.use_degrees bool
+                        Set to `True` for backward compatibility with previous
+                        policies/dataset (default: False)
+
+OmxFollowerConfig ['robot']:
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.port str      Port to connect to the arm (default: None)
+  --robot.disable_torque_on_disconnect bool
+  --robot.max_relative_target [float|Dict]
+                        `max_relative_target` limits the magnitude of the
+                        relative positional target vector for safety purposes.
+                        Set this to a positive scalar to have the same value
+                        for all motors, or a dictionary that maps motor names
+                        to the max_relative_target value for that motor.
+                        (default: None)
+  --robot.cameras Dict  cameras (default: {})
+  --robot.use_degrees bool
+                        Set to `True` for backward compatibility with previous
+                        policies/dataset (default: False)
+
+Reachy2RobotConfig ['robot']:
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.max_relative_target [float]
+                        `max_relative_target` limits the magnitude of the
+                        relative positional target vector for safety purposes.
+                        Set this to a positive scalar to have the same value
+                        for all motors. (default: None)
+  --robot.ip_address [str]
+                        IP address of the Reachy 2 robot (default: localhost)
+  --robot.port int      Port of the Reachy 2 robot (default: 50065)
+  --robot.disable_torque_on_disconnect bool
+                        If True, turn_off_smoothly() will be sent to the robot
+                        before disconnecting. (default: False)
+  --robot.use_external_commands bool
+                        Tag for external commands control Set to True if you
+                        use an external commands system to control the robot,
+                        such as the official teleoperation application:
+                        https://github.com/pollen-
+                        robotics/Reachy2Teleoperation If True,
+                        robot.send_action() will not send commands to the
+                        robot. (default: False)
+  --robot.with_mobile_base bool
+                        Robot parts Set to False to not add the corresponding
+                        joints part to the robot list of joints. By default,
+                        all parts are set to True. (default: True)
+  --robot.with_l_arm bool
+  --robot.with_r_arm bool
+  --robot.with_neck bool
+  --robot.with_antennas bool
+  --robot.with_left_teleop_camera bool
+                        Robot cameras Set to True if you want to use the
+                        corresponding cameras in the observations. By default,
+                        no camera is used. (default: False)
+  --robot.with_right_teleop_camera bool
+  --robot.with_torso_camera bool
+  --robot.camera_width int
+                        Camera parameters (default: 640)
+  --robot.camera_height int
+  --robot.cameras Dict  For cameras other than the 3 default Reachy 2 cameras.
+                        (default: {})
+
+UnitreeG1Config ['robot']:
+
+  --robot.id [str]      Allows to distinguish between different robots of the
+                        same type (default: None)
+  --robot.calibration_dir [Path]
+                        Directory to store calibration file (default: None)
+  --robot.kp List       
+  --robot.kd List       
+  --robot.default_positions List
+                        Default joint positions (default: [0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0])
+  --robot.control_dt float
+                        250Hz (default: 0.004)
+  --robot.is_simulation bool
+                        Launch mujoco simulation (default: True)
+  --robot.robot_ip str  default G1 IP (default: 192.168.123.164)
+  --robot.cameras Dict  Cameras (ZMQ-based remote cameras) (default: {})
+  --robot.gravity_compensation bool
+                        Compensates for gravity on the unitree's arms using
+                        the arm ik solver (default: False)
+  --robot.controller [str]
+                        Lower-body controller class name, e.g.
+                        "GrootLocomotionController" or
+                        "HolosomaLocomotionController". None disables it.
+                        (default: None)

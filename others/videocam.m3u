@@ -1,0 +1,5 @@
+#EXTM3U
+avcapture://0x1400000c456367
+#EXTVLCOPT:sout=#duplicate{dst=display,dst=standard{mux=ts,access=http,dst=":1234"}}
+#EXTVLCOPT:bookmarks={name=Ohne Titel,time=12423.513}
+avcapture://0x1400000c456367

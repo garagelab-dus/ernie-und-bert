@@ -1,0 +1,30 @@
+User specifies ANY desired virtual position (e.g., --set-current-pos 0 for fully open)
+Script calculates the offset to achieve that
+When user then moves gripper mechanically to min/max, those positions are recorded in the user's virtual coordinate system
+The real constraint is: the calculated offset must fit in the signed 11-bit range (-2048 to 2047), not that the virtual position must match physical limits.
+
+Let me fix this:
+
+Perfect. Fixed. Now the workflow is correct:
+
+Correct workflow:
+
+Example: gripper currently at encoder 2700, you want virtual 0:
+
+Offset = 2700 - 0 = 2700 ✓ (fits in -2048 to 2047... wait that's wrong)
+Actually, I need to reconsider. If current_offset was already 0 and current_present is 2700:
+
+new_offset = 0 + 2700 - 0 = 2700 → exceeds 2047!
+So the constraint check is correct, but there's still a physical limit: the range of encoder values you can map into the virtual coordinate system is limited by the 11-bit offset register.
+
+The math says: you can only map positions within ~2000 of the current encoder value into any reasonable virtual coordinate system.
+
+Is this the real issue you're hitting? Or does LeRobot's bus abstraction handle this differently?
+
+---
+
+- a motor can NOT rotate 360 degree, because of mechanical constraint
+
+- we assume the total posible degrees are 0° to 270°
+
+- 270° are 3/4 of 4096 possible position values
