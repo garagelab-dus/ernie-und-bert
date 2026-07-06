@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 echo "Starting calibration for robot and teleoperation devices..."
 echo "Robot Type: ${ernie_type}, Robot Port: ${ernie_port}, Robot ID: ${ernie_id}"

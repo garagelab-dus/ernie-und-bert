@@ -1,6 +1,24 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+
+echo "Start running a policy on the robot..."
+echo
+
+echo "First clean-up cache for the dataset to avoid any potential issues with previous runs."
+echo
+
 
 rm -rf /Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/eval_record-test-05
+
+# add a check, if last command exited with no error
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to clean up cache for the dataset."
+    exit 1
+else
+    echo "Cache cleaned successfully."
+fi
+
+echo "Now running the policy on the robot..."
+echo
 
 lerobot-record \
   --robot.type=${ernie_type} \
