@@ -1,4 +1,5 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+
 lerobot-teleoperate \
     --robot.type=${ernie_type} \
     --robot.port=${ernie_port} \
