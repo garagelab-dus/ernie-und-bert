@@ -8,5 +8,5 @@ lerobot-teleoperate \
     --teleop.port=${bert_port} \
     --teleop.id=${bert_id} \
     --robot.cameras=${robot_cameras2} \
-    --display_data=true \ 
-    --fps=30
+    --display_data=true \
+    --fps=30 

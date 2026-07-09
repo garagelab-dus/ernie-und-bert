@@ -29,9 +29,15 @@ done
 
 
 echo "ATTENTION - script under development"
-echo "Switch to BERT controller board"
-
-exit 1
+echo "Switch to BERT controller board???"
+echo
+printf "Continue with ERNIE's board? ([Y]/n) "
+read -r reply
+if [[ -n "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
+  echo "Aborting."
+  exit 1
+fi
+# exit 1
 
 if [[ "$debug" != "true" && "$debug" != "false" ]]; then
   echo "Error: --debug must be true or false"
@@ -122,7 +128,7 @@ EXPECTED_MOTOR_IDS = {
   "gripper": 6,
 }
 
-supported_types = {"so100_leader", "so101_leader"}
+supported_types = {"so100_follower", "so101_follower"}
 if ernie_type not in supported_types:
   print(
     f"Error: maintenance motor read currently supports {sorted(supported_types)} only; got '{ernie_type}'",

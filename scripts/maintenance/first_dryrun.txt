@@ -1,0 +1,28 @@
+robot: ernie
+type: so101_follower
+port: /dev/tty.usbmodem5A680100061
+id: ernie
+debug: true
+verbosity: false
+Continue? ([Y]/n) Debug mode enabled: first 20 loop targets (no motor movement).
+actual_start_positions={'shoulder_pan': 2103, 'shoulder_lift': 968, 'elbow_flex': 4031, 'wrist_flex': 2619, 'wrist_roll': 2007, 'gripper': 2604}
+iter=00000 goals={'shoulder_pan': 2085, 'shoulder_lift': 2096, 'elbow_flex': 2934, 'wrist_flex': 2038, 'wrist_roll': 2048, 'gripper': 2376}
+iter=00001 goals={'shoulder_pan': 2086, 'shoulder_lift': 2096, 'elbow_flex': 2934, 'wrist_flex': 2039, 'wrist_roll': 2048, 'gripper': 2376}
+iter=00002 goals={'shoulder_pan': 2086, 'shoulder_lift': 2097, 'elbow_flex': 2935, 'wrist_flex': 2039, 'wrist_roll': 2049, 'gripper': 2376}
+iter=00003 goals={'shoulder_pan': 2087, 'shoulder_lift': 2097, 'elbow_flex': 2935, 'wrist_flex': 2040, 'wrist_roll': 2050, 'gripper': 2376}
+iter=00004 goals={'shoulder_pan': 2087, 'shoulder_lift': 2098, 'elbow_flex': 2936, 'wrist_flex': 2040, 'wrist_roll': 2051, 'gripper': 2377}
+iter=00005 goals={'shoulder_pan': 2088, 'shoulder_lift': 2098, 'elbow_flex': 2936, 'wrist_flex': 2041, 'wrist_roll': 2052, 'gripper': 2377}
+iter=00006 goals={'shoulder_pan': 2088, 'shoulder_lift': 2099, 'elbow_flex': 2937, 'wrist_flex': 2041, 'wrist_roll': 2052, 'gripper': 2377}
+iter=00007 goals={'shoulder_pan': 2089, 'shoulder_lift': 2099, 'elbow_flex': 2937, 'wrist_flex': 2042, 'wrist_roll': 2053, 'gripper': 2378}
+iter=00008 goals={'shoulder_pan': 2089, 'shoulder_lift': 2100, 'elbow_flex': 2938, 'wrist_flex': 2042, 'wrist_roll': 2054, 'gripper': 2378}
+iter=00009 goals={'shoulder_pan': 2090, 'shoulder_lift': 2100, 'elbow_flex': 2938, 'wrist_flex': 2042, 'wrist_roll': 2055, 'gripper': 2378}
+iter=00010 goals={'shoulder_pan': 2090, 'shoulder_lift': 2101, 'elbow_flex': 2938, 'wrist_flex': 2043, 'wrist_roll': 2056, 'gripper': 2379}
+iter=00011 goals={'shoulder_pan': 2091, 'shoulder_lift': 2101, 'elbow_flex': 2939, 'wrist_flex': 2043, 'wrist_roll': 2057, 'gripper': 2379}
+iter=00012 goals={'shoulder_pan': 2091, 'shoulder_lift': 2101, 'elbow_flex': 2939, 'wrist_flex': 2044, 'wrist_roll': 2057, 'gripper': 2379}
+iter=00013 goals={'shoulder_pan': 2092, 'shoulder_lift': 2102, 'elbow_flex': 2940, 'wrist_flex': 2044, 'wrist_roll': 2058, 'gripper': 2379}
+iter=00014 goals={'shoulder_pan': 2092, 'shoulder_lift': 2102, 'elbow_flex': 2940, 'wrist_flex': 2045, 'wrist_roll': 2059, 'gripper': 2380}
+iter=00015 goals={'shoulder_pan': 2093, 'shoulder_lift': 2103, 'elbow_flex': 2941, 'wrist_flex': 2045, 'wrist_roll': 2060, 'gripper': 2380}
+iter=00016 goals={'shoulder_pan': 2093, 'shoulder_lift': 2103, 'elbow_flex': 2941, 'wrist_flex': 2045, 'wrist_roll': 2061, 'gripper': 2380}
+iter=00017 goals={'shoulder_pan': 2094, 'shoulder_lift': 2104, 'elbow_flex': 2942, 'wrist_flex': 2046, 'wrist_roll': 2061, 'gripper': 2381}
+iter=00018 goals={'shoulder_pan': 2094, 'shoulder_lift': 2104, 'elbow_flex': 2942, 'wrist_flex': 2046, 'wrist_roll': 2062, 'gripper': 2381}
+iter=00019 goals={'shoulder_pan': 2095, 'shoulder_lift': 2105, 'elbow_flex': 2942, 'wrist_flex': 2047, 'wrist_roll': 2063, 'gripper': 2381}
