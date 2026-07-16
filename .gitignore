@@ -17,3 +17,4 @@ camera*_settings.ini
 
 # Generated maintenance snapshots
 scripts/maintenance/camera_snapshots/snapshot_*.jpg
+**/captured_images/*.*
