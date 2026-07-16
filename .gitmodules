@@ -4,3 +4,6 @@
 [submodule "lerobot"]
 	path = lerobot
 	url = https://github.com/garagelab-dus/lerobot-fork.git
+[submodule "rerun-fork"]
+	path = rerun-fork
+	url = https://github.com/garagelab-dus/rerun-fork.git
