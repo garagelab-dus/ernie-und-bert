@@ -1,0 +1,33 @@
+# Traceback
+
+INFO 2026-07-16 21:24:25 ls/utils.py:143 Stop recording
+INFO 2026-07-16 21:24:27 ls/utils.py:143 Exiting
+Traceback (most recent call last):
+  File "/Users/lerobot/.conda/envs/robot/bin/lerobot-record", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/scripts/lerobot_record.py", line 671, in main
+    record()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/configs/parser.py", line 233, in wrapper_inner
+    response = fn(cfg, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/scripts/lerobot_record.py", line 585, in record
+    robot.connect()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 39, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/robots/so_follower/so_follower.py", line 102, in connect
+    cam.connect()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 39, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/cameras/opencv/camera_opencv.py", line 167, in connect
+    self._configure_capture_settings()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/utils/decorators.py", line 29, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lerobot/repos/lerobot/src/lerobot/cameras/opencv/camera_opencv.py", line 223, in _configure_capture_settings
+    self._validate_fps()
+  File "/Users/lerobot/repos/lerobot/src/lerobot/cameras/opencv/camera_opencv.py", line 238, in _validate_fps
+    raise RuntimeError(f"{self} failed to set fps={self.fps} ({actual_fps=}).")
+RuntimeError: OpenCVCamera(0) failed to set fps=14 (actual_fps=30.00003).

@@ -30,10 +30,11 @@ lerobot-record \
     --teleop.id=${bert_id} \
     --display_data=true \
     --dataset.repo_id=garagelab-duesseldorf/${repo_id} \
-    --dataset.num_episodes=5 \
+    --dataset.num_episodes=1 \
     --dataset.push_to_hub=False \
     --dataset.episode_time_s=60 \
     --dataset.reset_time_s=60 \
+    --dataset.fps=30 \
     --dataset.single_task=${task_name} \
     --dataset.streaming_encoding=true \
     --dataset.encoder_threads=2 
