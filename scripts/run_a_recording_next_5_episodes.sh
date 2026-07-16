@@ -12,9 +12,10 @@ if [ -z "$task_name" ]; then
 fi
 
 # cleaning cache locally
-rm -rf /Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/${repo_id}; 
+# rm -rf /Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/${repo_id}; 
+#
+# echo "Cache cleared for repository garagelab-duesseldorf/${repo_id}."
 
-echo "Cache cleared for repository garagelab-duesseldorf/${repo_id}."
 echo "Starting training for task ${task_name} using repository garagelab-duesseldorf/${repo_id}."
 
 
@@ -31,6 +32,8 @@ lerobot-record \
     --display_data=true \
     --dataset.repo_id=garagelab-duesseldorf/${repo_id} \
     --dataset.num_episodes=5 \
+    --resume=true \
+    --dataset.root="/Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/${repo_id}" \
     --dataset.push_to_hub=False \
     --dataset.episode_time_s=60 \
     --dataset.reset_time_s=60 \
@@ -38,8 +41,8 @@ lerobot-record \
     --dataset.streaming_encoding=true \
     --dataset.encoder_threads=2 
 
-    # --dataset.num_episodes IST IMMER DIE ANZAHL DER AUFZUNEHMENDEN EPISODEN
-    # die nächsten zwei parameter sorgen dafür, das die vorherigen episoden bestehen bleiben
-    # --resume=true
-    # --dataset.root="/Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/${repo_id}"
+# --dataset.num_episodes IST IMMER DIE ANZAHL DER AUFZUNEHMENDEN EPISODEN
+# die nächsten zwei parameter sorgen dafür, das die vorherigen episoden bestehen bleiben
+# --resume=true \
+# --dataset.root="/Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/${repo_id}" \
 

@@ -458,11 +458,11 @@ def soft_release_torque(bus, torque_limits, input_stream=None):
   if original_torque_limit <= 0:
     return
 
-  max_steps = min(original_torque_limit, 300)
+  max_steps = min(original_torque_limit, 100)
   current_torque_limit = original_torque_limit
   print(
     f"Soft release on '{motor_to_release}' (id={bus.motors[motor_to_release].id}), "
-    "decreasing torque limit by 1 every 100ms for up to 30s."
+    "decreasing torque limit by 1 every 100ms for up to 10s."
   )
 
   try:
