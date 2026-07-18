@@ -1,3 +1,0 @@
-latest recording parameter
-task_name="pap_green_foam_in_box"
-repo_id="multi_episode" 

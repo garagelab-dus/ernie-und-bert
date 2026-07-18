@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "/Users/lerobot/repos/ernie-und-bert/scripts/replay-episode-selection.py", line 64, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lerobot/repos/ernie-und-bert/scripts/replay-episode-selection.py", line 21, in main
+    datasets_mod = importlib.import_module("lerobot.datasets")
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/lerobot/repos/ernie-und-bert/lerobot/src/lerobot/datasets/__init__.py", line 18, in <module>
+    from lerobot.utils.import_utils import require_package
+  File "/Users/lerobot/repos/ernie-und-bert/lerobot/src/lerobot/utils/__init__.py", line 23, in <module>
+    from .constants import (
+    ...<10 lines>...
+    )
+  File "/Users/lerobot/repos/ernie-und-bert/lerobot/src/lerobot/utils/constants.py", line 18, in <module>
+    from huggingface_hub.constants import HF_HOME
+ModuleNotFoundError: No module named 'huggingface_hub'
