@@ -21,15 +21,15 @@ repo_id="${repo_id:-$REPO_ID}"
 
 # check, if repo_id already exists.
 # if true, write a warning that repo_id cache will be cleared.
-if [ -d "/Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/${repo_id}" ]; then
-  echo "Warning: The repository garagelab-duesseldorf/${repo_id} already exists in the cache."
-  echo "The cache will be cleared before starting the training."
-else
-  echo "The repository garagelab-duesseldorf/${repo_id} does not exist in the cache."
-  echo "Initializing training:"
-  echo "task: ${task_name}"
-  echo "repository: ${repo_id}."
-fi
+# if [ -d "/Users/lerobot/.cache/huggingface/lerobot/garagelab-duesseldorf/${repo_id}" ]; then
+#   echo "Warning: The repository garagelab-duesseldorf/${repo_id} already exists in the cache."
+#   echo "The cache will be cleared before starting the training."
+# else
+#   echo "The repository garagelab-duesseldorf/${repo_id} does not exist in the cache."
+#   echo "Initializing training:"
+#   echo "task: ${task_name}"
+#   echo "repository: ${repo_id}."
+# fi
 # ask for confirmation to continue
 # User must press ENTER to continue or any key to abort.
 # if ENTER we exit with success, otherwise we exit with 1
